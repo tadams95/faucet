@@ -8,23 +8,34 @@ contract Faucet {
 
     //External functions are part of the contract interface
     //which means they can be called via contracts and other txns
-   
-   address[] public funders;
+    uint public numOfFunders;
+    mapping(address => bool) private funders;
+    mapping(uint => address) private lutFunders;
 
-   receive() external payable {}
+    receive() external payable {}
 
-   function addFunds() external payable {
-    funders.push(msg.sender);
-   }
+    function addFunds() external payable {
+        address funder = msg.sender;
 
-   function getAllFunders() public view returns (address[] memory) {
-    return funders;
-   }
+        if (!funders[funder]){
+            uint index = numOfFunders++;
+            funders[funder] = true;
+            lutFunders[index] = funder;
+        }
+    }
 
-   function getFunderAtIndex(uint8 index) external view returns(address) {
-    address[] memory _funders = getAllFunders();
-    return _funders[index];
-   }
+    function getAllFunders() public view returns (address[] memory) {
+        address[] memory _funders = new address[](numOfFunders);
+
+        for (uint i = 0; i < numOfFunders; i++) {
+            _funders[i] = lutFunders[i];
+        }
+        return _funders;
+    }
+
+    function getFunderAtIndex(uint8 index) external view returns (address) {
+        return lutFunders[index];
+    }
 
     //pure, view - read-only call, no gas fee
     //view: it indicates that the function will not alter the storage state in any way
