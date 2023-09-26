@@ -2,10 +2,10 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 import "./Owned.sol";
-
 import "./Logger.sol";
+import "./IFaucet.sol";
 
-contract Faucet is Owned, Logger {
+contract Faucet is Owned, Logger, IFaucet {
     //this is a special function
     //it's called when you make a tx that doesn't specify
     //function name to call
@@ -16,8 +16,6 @@ contract Faucet is Owned, Logger {
     mapping(address => bool) private funders;
     mapping(uint => address) private lutFunders;
 
-    
-
     modifier limitWithdraw(uint withdrawAmount) {
         require(
             withdrawAmount <= 100000000000000000,
@@ -26,10 +24,9 @@ contract Faucet is Owned, Logger {
         _;
     }
 
-   
     receive() external payable {}
 
-    function emitLog() public override pure returns(bytes32) {
+    function emitLog() public pure override returns (bytes32) {
         return "Hello World";
     }
 
@@ -39,6 +36,7 @@ contract Faucet is Owned, Logger {
 
     function addFunds() external payable {
         address funder = msg.sender;
+       test3();
 
         if (!funders[funder]) {
             uint index = numOfFunders++;
