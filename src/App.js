@@ -19,24 +19,24 @@ function App() {
 
         // Prompt user for account access
         try {
-          await provider.enable();
+          await provider.request({ method: "eth_requestAccounts" });
         } catch {
           console.log("User denied account access");
         }
-      }  // If the user is using CBW, then we want to use their provider
-  // instead of the one specified here.
-  if (window.ethereum) {
-    provider = window.ethereum;
-  }
-  // If CBW is not available, but the user is using Mist, then we
-  // want to use their provider instead of the one specified here.
-  else if (window.web3) {
-    provider = window.web3.currentProvider;
-  }
-  // check if in development environment
-  else if (!process.env.production) {
-    provider = new Web3.providers.HttpProvider("http://localhost:7545");
-  }
+      } // If the user is using CBW, then we want to use their provider
+      // instead of the one specified here.
+      if (window.ethereum) {
+        provider = window.ethereum;
+      }
+      // If CBW is not available, but the user is using Mist, then we
+      // want to use their provider instead of the one specified here.
+      else if (window.web3) {
+        provider = window.web3.currentProvider;
+      }
+      // check if in development environment
+      else if (!process.env.production) {
+        provider = new Web3.providers.HttpProvider("http://localhost:7545");
+      }
 
       setWeb3Api({
         web3: new Web3(provider),
@@ -60,31 +60,31 @@ function App() {
 
   return (
     <>
-      <div className="faucet-wrapper">
+     <div className="faucet-wrapper">
         <div className="faucet">
-          <span>
-            <strong>Account: </strong>
-          </span>
-          <h1>{account ? account : "not connected"}</h1>
-          <div className="balance-view is-size-2">
+          <div className="is-flex is-align-items-center">
+            <span>
+              <strong className="mr-2">Account: </strong>
+            </span>
+              { account ?
+                <div>{account}</div> :
+                <button
+                  className="button is-small"
+                  onClick={() =>
+                    web3Api.provider.request({method: "eth_requestAccounts"}
+                  )}
+                >
+                  Connect Wallet
+                </button>
+              }
+          </div>
+          <div className="balance-view is-size-2 my-4">
             Current Balance: <strong>10</strong> ETH
           </div>
           <button
-            className="btn mr-2"
-            //prompts CBW to connect to the app
-            //requests user to authorize the app to access their ETH account
-            //returns the user's account in the console.log
-            onClick={async () => {
-              const accounts = await window.ethereum.request({
-                method: "eth_requestAccounts",
-              });
-              console.log(accounts);
-            }}
-          >
-            Enable Ethereum
-          </button>
-          <button className="btn mr-2">Donate</button>
-          <button className="btn">Withdraw</button>
+            className="button is-link mr-2">Donate</button>
+          <button
+            className="button is-primary">Withdraw</button>
         </div>
       </div>
     </>
